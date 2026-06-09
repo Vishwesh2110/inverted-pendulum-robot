@@ -1,55 +1,330 @@
-# Inverted Pendulum — Self-Balancing Robot Simulation
+# 🤖 Inverted Pendulum Self-Balancing Robot
 
-A physics-based simulation of an inverted pendulum system
-controlled by a PID controller. Built from scratch using
-Python on Ubuntu Linux.
+A complete self-balancing robot project built from scratch using **Python, ROS 2 Humble, Gazebo, and Control Systems Engineering**.
 
-Phase 1 of a complete self-balancing robot project using
-Python, ROS 2, and Gazebo.
+This project simulates and controls a two-wheeled inverted pendulum robot capable of maintaining balance using a **PID controller**, similar to the technology used in **Segways**, autonomous delivery robots, and modern balancing platforms.
 
-## Results
-- Uncontrolled pendulum: falls to 354 degrees
-- PID controlled pendulum: stabilizes at 0.0002 degrees
-- Steady-state error: 0.0002 degrees from 5 degree disturbance
+---
 
-## Physics
-    theta'' = (g/L) x sin(theta) + u
+## 📌 Project Overview
 
-- theta = angle from vertical
-- g = 9.81 m/s^2
-- L = 1.0 m (rod length)
-- u = PID control output
+The robot continuously reads its tilt angle from an IMU sensor, calculates the error from the upright position, and applies corrective wheel motion through a PID controller to maintain balance.
 
-## PID Gains
+### Key Features
 
-| Gain | Value | Purpose                     |
-|------|-------|-----------------------------|
-| Kp   | 25.0  | Reacts to current tilt      |
-| Ki   | 0.5   | Corrects long-term drift    |
-| Kd   | 10.0  | Brakes before overshoot     |
+* Python-based inverted pendulum simulation
+* PID control implementation
+* Real-time balancing visualization
+* ROS 2 publisher/subscriber architecture
+* Gazebo 3D robot simulation
+* URDF robot modeling
+* IMU sensor integration
+* Differential wheel control
 
-## Files
+---
 
-| File                  | What it does                       |
-|-----------------------|------------------------------------|
-| simulation_v1.py      | Pendulum with no control (falls)   |
-| simulation_v2.py      | Pendulum with PID (balances)       |
-| pendulum_animation.py | Live side-by-side animation        |
+## 🎥 Demo
 
-## How to Run
+Add your screenshots, GIFs, or demonstration videos here.
+
+```text
+[ Demo GIF / Video ]
+```
+
+---
+
+# 📂 Project Structure
+
+```text
+inverted-pendulum-robot/
+│
+├── simulation_v1.py
+├── simulation_v2.py
+├── pendulum_animation.py
+│
+└── ros2_ws/
+    │
+    ├── pendulum_controller/
+    │   ├── pendulum_publisher.py
+    │   ├── pendulum_subscriber.py
+    │   ├── pendulum_balance.py
+    │   └── gazebo_balance.py
+    │
+    └── pendulum_robot/
+        ├── urdf/
+        │   └── robot.urdf
+        │
+        └── worlds/
+            └── pendulum.world
+```
+
+---
+
+# 🛠 Technologies Used
+
+| Category         | Technologies        |
+| ---------------- | ------------------- |
+| Programming      | Python              |
+| Robotics         | ROS 2 Humble        |
+| Simulation       | Gazebo 11           |
+| Modeling         | URDF                |
+| Visualization    | Matplotlib          |
+| Operating System | Ubuntu 22.04 / WSL2 |
+| Version Control  | Git & GitHub        |
+
+---
+
+# 📋 Requirements
+
+## System Requirements
+
+* Ubuntu 22.04 LTS
+* ROS 2 Humble
+* Gazebo 11
+* Python 3.10+
+* Git
+
+---
+
+## Installation
+
+### Clone Repository
+
+```bash
+git clone https://github.com/Vishwesh2110/inverted-pendulum-robot.git
+
+cd inverted-pendulum-robot
+```
+
+### Install Python Dependencies
 
 ```bash
 pip3 install numpy matplotlib
+```
+
+### Install ROS 2 and Gazebo
+
+```bash
+sudo apt update
+
+sudo apt install ros-humble-desktop -y
+
+sudo apt install ros-humble-gazebo-ros-pkgs -y
+
+sudo apt install python3-colcon-common-extensions -y
+```
+
+---
+
+# 🚀 Running the Project
+
+## Phase 1 — Pure Python Simulation
+
+### Open Loop (Falls Down)
+
+```bash
 python3 simulation_v1.py
+```
+
+### Closed Loop PID Balancing
+
+```bash
 python3 simulation_v2.py
+```
+
+### Real-Time Animation
+
+```bash
 python3 pendulum_animation.py
 ```
 
-## Tech Stack
-Python 3 · NumPy · Matplotlib · Ubuntu 22.04 · Git
+---
 
-## Roadmap
-- [x] Phase 1 — Python PID Simulation
-- [ ] Phase 2 — ROS 2 Nodes
-- [ ] Phase 3 — Gazebo 3D Simulation
-- [ ] Phase 4 — Full Balancing Robot
+## Phase 2 — ROS 2 Integration
+
+Build the workspace:
+
+```bash
+cd ros2_ws
+
+colcon build --packages-select pendulum_controller
+
+source /opt/ros/humble/setup.bash
+
+source install/setup.bash
+```
+
+Run the balancing node:
+
+```bash
+ros2 run pendulum_controller pendulum_balance
+```
+
+---
+
+## Phase 3 — Full Gazebo Simulation
+
+### Terminal 1: Launch Gazebo
+
+```bash
+source /opt/ros/humble/setup.bash
+
+gazebo --verbose \
+-s libgazebo_ros_factory.so \
+~/ros2_ws/src/pendulum_robot/worlds/pendulum.world
+```
+
+---
+
+### Terminal 2: Spawn Robot
+
+```bash
+source /opt/ros/humble/setup.bash
+
+ros2 run gazebo_ros spawn_entity.py -file ~/ros2_ws/src/pendulum_robot/urdf/robot.urdf -entity pendulum_robot -z 0.2 -P 0.35
+```
+
+---
+
+### Terminal 3: Start Controller
+
+```bash
+source /opt/ros/humble/setup.bash
+
+source ~/ros2_ws/install/setup.bash
+
+ros2 run pendulum_controller gazebo_balance
+```
+
+---
+
+# 🎯 PID Controller
+
+The robot balances itself using a PID controller.
+
+| Parameter | Value | Purpose                           |
+| --------- | ----- | --------------------------------- |
+| Kp        | 80.0  | Corrects current tilt             |
+| Ki        | 0.3   | Eliminates steady-state drift     |
+| Kd        | 12.0  | Reduces oscillation and overshoot |
+
+---
+
+# ⚙️ Mathematical Model
+
+The inverted pendulum dynamics are represented as:
+
+[
+\theta'' = \frac{g}{L}\sin(\theta) + u
+]
+
+Where:
+
+* θ = Tilt angle (radians)
+* g = 9.81 m/s²
+* L = Pendulum length
+* u = Control input generated by PID
+
+---
+
+# 🔄 ROS 2 Architecture
+
+```text
+Gazebo IMU Sensor
+        │
+        ▼
+      /imu
+        │
+        ▼
+gazebo_balance.py
+        │
+        ├── PID Controller
+        │
+        ▼
+     /cmd_vel
+        │
+        ▼
+ Differential Wheels
+        │
+        ▼
+ Robot Balancing
+```
+
+---
+
+# 🧠 Control Workflow
+
+```text
+Robot Tilts
+      │
+      ▼
+IMU Measures Angle
+      │
+      ▼
+PID Computes Error
+      │
+      ▼
+Wheel Velocity Generated
+      │
+      ▼
+Robot Returns Upright
+```
+
+---
+
+# 📈 Project Roadmap
+
+* ✅ Phase 1 — Python Dynamics Simulation
+* ✅ Phase 2 — ROS 2 Communication
+* ✅ Phase 3 — Gazebo Robot Simulation
+* ⏳ Phase 4 — LQR Controller Implementation
+* ⏳ Phase 5 — Sensor Fusion (IMU + Encoder)
+* ⏳ Phase 6 — Physical Hardware Prototype
+* ⏳ Phase 7 — Autonomous Navigation
+
+---
+
+# 🎓 Skills Demonstrated
+
+* Control Systems
+* PID Controller Design
+* Robot Dynamics
+* ROS 2 Development
+* Gazebo Simulation
+* URDF Modeling
+* IMU Integration
+* Linux Development
+* Python Programming
+* Git & GitHub
+* Robotics Software Engineering
+
+---
+
+# 📚 Applications
+
+This project demonstrates the same balancing principles used in:
+
+* Segway Personal Transporters
+* Self-Balancing Robots
+* Autonomous Delivery Robots
+* Mobile Manipulators
+* Warehouse Robotics
+* Educational Control System Platforms
+
+---
+
+# 👨‍💻 Author
+
+**Vishwesh Patil**
+
+Computer Science Engineering (2023–2027)
+
+St. Vincent Pallotti College of Engineering & Technology, Nagpur
+
+GitHub: https://github.com/Vishwesh2110
+
+---
+
+## ⭐ Support
+
+If you found this project useful, consider giving the repository a star.

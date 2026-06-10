@@ -27,6 +27,7 @@ setup(
         'pendulum_publisher = pendulum_controller.pendulum_publisher:main',
         'pendulum_subscriber = pendulum_controller.pendulum_subscriber:main',
         'pendulum_balance = pendulum_controller.pendulum_balance:main',
+        'gazebo_balance = pendulum_controller.gazebo_balance:main',
     ],
 },
 )
